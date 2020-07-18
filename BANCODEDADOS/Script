@@ -1,0 +1,330 @@
+CREATE DATABASE smileodonto;
+
+CREATE TABLE UF (
+  idUF INT(11) NOT NULL,
+  nomeUF VARCHAR(45) NULL DEFAULT NULL,
+  sigla VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (idUF))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Cidade (
+  idCidade INT(11) NOT NULL,
+  nomeCidade VARCHAR(200) NULL DEFAULT NULL,
+  idUF INT(11) NOT NULL,
+  PRIMARY KEY (idCidade),
+  FOREIGN KEY (idUF) REFERENCES UF (idUF))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Pessoa (
+  `idPessoa` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(45) NULL DEFAULT NULL,
+  `CPF` CHAR(15) NULL DEFAULT NULL,
+  `RG` CHAR(20) NULL DEFAULT NULL,
+  `dataNascimento` DATE NULL DEFAULT NULL,
+  `sexo` VARCHAR(45) NULL DEFAULT NULL,
+  `foto` VARCHAR(200) NULL DEFAULT NULL,
+  `bairro` VARCHAR(200) NULL DEFAULT NULL,
+  `cep` VARCHAR(45) NULL DEFAULT NULL,
+  `numero` INT(3) NULL DEFAULT NULL,
+  `complemento` CHAR(8) NULL DEFAULT NULL,
+  `logradouro` VARCHAR(200) NULL DEFAULT NULL,
+  `idCidade` INT(11) NOT NULL,
+  PRIMARY KEY (`idPessoa`),
+  FOREIGN KEY (`idCidade`) REFERENCES Cidade (`idCidade`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE EmailPessoa (
+  `idEmailPessoa` INT(11) NOT NULL AUTO_INCREMENT,
+  `email` VARCHAR(45) NULL DEFAULT NULL,
+  `idPessoa` INT(11) NOT NULL,
+  PRIMARY KEY (`idEmailPessoa`),
+  FOREIGN KEY (`idPessoa`) REFERENCES Pessoa (`idPessoa`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE TelefonePessoa (
+  `idTelefonePessoa` INT(11) NOT NULL AUTO_INCREMENT,
+  `telefoneResidencial` VARCHAR(45) NULL DEFAULT NULL,
+  `idPessoa` INT(11) NOT NULL,
+  `telefoneCelular` VARCHAR(45) NULL DEFAULT NULL,
+  `telefoneRecado` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`idTelefonePessoa`),
+  FOREIGN KEY (`idPessoa`) REFERENCES Pessoa (`idPessoa`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Paciente (
+  `dataCadastro` DATE NULL DEFAULT NULL,
+  `idPaciente` INT(11) NOT NULL,
+  `responsavel` CHAR(4) NULL DEFAULT NULL,
+  `nomeResponsavel` VARCHAR(45) NULL DEFAULT NULL,
+  `telefoneResponsavel` VARCHAR(45) NULL DEFAULT NULL,
+  `CPFResponsavel` VARCHAR(45) NULL DEFAULT NULL,
+  `RGResponsavel` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`idPaciente`),
+  FOREIGN KEY (`idPaciente`) REFERENCES Pessoa (`idPessoa`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Cargo (
+  `idCargo` INT(11) NOT NULL,
+  `nomeCargo` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`idCargo`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Funcionario (
+  `funUsuario` VARCHAR(45) NULL DEFAULT NULL,
+  `funSenha` VARCHAR(45) NULL DEFAULT NULL,
+  `idFuncionario` INT(11) NOT NULL,
+  `dataInicio` DATE NULL DEFAULT NULL,
+  `dataFim` DATE NULL DEFAULT NULL,
+  `idCargo` INT(11) NOT NULL,
+  PRIMARY KEY (`idFuncionario`),
+  FOREIGN KEY (`idFuncionario`) REFERENCES Pessoa (`idPessoa`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idCargo`) REFERENCES Cargo (`idCargo`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Especialidade (
+  `idEspecialidade` INT(11) NOT NULL AUTO_INCREMENT,
+  `nomeEspecialidade` VARCHAR(255) NULL DEFAULT NULL,
+  `descricao` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`idEspecialidade`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Dentista (
+  `CRO` VARCHAR(255) NOT NULL,
+  `siglaConselho` VARCHAR(45) NULL DEFAULT NULL,
+  `idDentista` INT(11) NOT NULL,
+  `ufConselho` INT(11) NOT NULL,
+  `idEspecialidade` INT(11) NOT NULL,
+  PRIMARY KEY (`idDentista`),
+  FOREIGN KEY (`idEspecialidade`) REFERENCES Especialidade (`idEspecialidade`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idDentista`) REFERENCES Funcionario (`idFuncionario`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`ufConselho`) REFERENCES UF (`idUF`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Tipo (
+  `idTipo` INT(11) NOT NULL,
+  `tipo` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`idTipo`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Motivo (
+  `idMotivo` INT(11) NOT NULL AUTO_INCREMENT,
+  `motivo` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`idMotivo`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Situacao (
+  `idSituacao` INT(11) NOT NULL,
+  `situacao` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`idSituacao`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Agendamento (
+  `idAgendamento` INT(11) NOT NULL AUTO_INCREMENT,
+  `dataInicio` DATETIME NULL DEFAULT NULL,
+  `dataFim` DATETIME NULL DEFAULT NULL,
+  `idPaciente` INT(11) NOT NULL,
+  `idDentista` INT(11) NOT NULL,
+  `idTipo` INT(11) NOT NULL,
+  `idMotivo` INT(11) NOT NULL,
+  `idSituacao` INT(11) NOT NULL,
+  `cor` VARCHAR(10) NULL DEFAULT NULL,
+  `title` VARCHAR(255) NULL DEFAULT NULL,
+  `data` DATE NULL DEFAULT NULL,
+  `horarioInicio` VARCHAR(45) NULL DEFAULT NULL,
+  `horarioFim` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`idAgendamento`),
+  FOREIGN KEY (`idPaciente`) REFERENCES Paciente (`idPaciente`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idDentista`) REFERENCES Dentista (`idDentista`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idTipo`) REFERENCES Tipo (`idTipo`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idMotivo`) REFERENCES Motivo (`idMotivo`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idSituacao`) REFERENCES Situacao (`idSituacao`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Categoria (
+  `idCategoria` INT(11) NOT NULL AUTO_INCREMENT,
+  `nomeCategoria` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`idCategoria`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Procedimento (
+  `idProcedimento` INT(11) NOT NULL AUTO_INCREMENT,
+  `nomeProcedimento` VARCHAR(200) NULL DEFAULT NULL,
+  `valor` FLOAT(11) NULL DEFAULT NULL,
+  `idCategoria` INT(11) NOT NULL,
+  PRIMARY KEY (`idProcedimento`),
+  FOREIGN KEY (`idCategoria`) REFERENCES Categoria (`idCategoria`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Questionario (
+  `idQuestionario` INT(11) NOT NULL AUTO_INCREMENT,
+  `nomeFicha` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`idQuestionario`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Alerta (
+  `idAlerta` INT(11) NOT NULL,
+  `alerta` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`idAlerta`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Obrigatoriedade (
+  `idObrigatoriedade` INT(11) NOT NULL,
+  `obrigatorio` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`idObrigatoriedade`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Questoes (
+  `idQuestoes` INT(11) NOT NULL AUTO_INCREMENT,
+  `enunciado` TEXT(20000) NULL DEFAULT NULL,
+  `idObrigatoriedade` INT(11) NOT NULL,
+  `idAlerta` INT(11) NOT NULL,
+  PRIMARY KEY (`idQuestoes`),
+  FOREIGN KEY (`idObrigatoriedade`) REFERENCES Obrigatoriedade (`idObrigatoriedade`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idAlerta`) REFERENCES Alerta (`idAlerta`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Anamnese (
+  `idAnamnese` INT(11) NOT NULL AUTO_INCREMENT,
+  `idPaciente` INT(11) NOT NULL,
+  `data` DATE NULL DEFAULT NULL,
+  PRIMARY KEY (`idAnamnese`),
+  FOREIGN KEY (`idPaciente`) REFERENCES Paciente (`idPaciente`) ON DELETE CASCADE ON UPDATE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE QuestionarioQuestoes (
+  `idQuestionario` INT(11) NOT NULL,
+  `idQuestoes` INT(11) NOT NULL,
+  PRIMARY KEY (`idQuestionario`, `idQuestoes`),
+  FOREIGN KEY (`idQuestionario`) REFERENCES Questionario (`idQuestionario`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idQuestoes`) REFERENCES Questoes (`idQuestoes`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE AnamneseQQ (
+  `idAnamnese` INT(11) NOT NULL,
+  `idQuestionario` INT(11) NOT NULL,
+  `idQuestoes` INT(11) NOT NULL,
+  `discursiva` TEXT(200000) NULL DEFAULT NULL,
+  PRIMARY KEY (`idAnamnese`, `idQuestionario`, `idQuestoes`),
+  FOREIGN KEY (`idAnamnese`) REFERENCES Anamnese (`idAnamnese`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idQuestionario` , `idQuestoes`) REFERENCES QuestionarioQuestoes (`idQuestionario` , `idQuestoes`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Imagem (
+  `idImagem` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(45) NULL DEFAULT NULL,
+  `descricao` LONGTEXT NULL DEFAULT NULL,
+  `foto` VARCHAR(200) NULL DEFAULT NULL,
+  `idPaciente` INT(11) NOT NULL,
+  `data` DATE NULL DEFAULT NULL,
+  PRIMARY KEY (`idImagem`),
+  FOREIGN KEY (`idPaciente`) REFERENCES Paciente (`idPaciente`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Dente (
+  `idDente` INT(11) NOT NULL,
+  `nome` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`idDente`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE SituacaoTratamento (
+  `idSituacaoTrat` INT(11) NOT NULL AUTO_INCREMENT,
+  `situacao` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`idSituacaoTrat`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Tratamento (
+  `idTratamento` INT(11) NOT NULL AUTO_INCREMENT,
+  `dataAbertura` DATE NULL DEFAULT NULL,
+  `dataEncerramento` DATE NULL DEFAULT NULL,
+  `idPaciente` INT(11) NOT NULL,
+  `idSituacaoTrat` INT(11) NOT NULL,
+  `idDentista` INT(11) NOT NULL,
+  PRIMARY KEY (`idTratamento`),
+  FOREIGN KEY (`idPaciente`) REFERENCES Paciente (`idPaciente`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idSituacaoTrat`) REFERENCES SituacaoTratamento (`idSituacaoTrat`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idDentista`) REFERENCES Dentista (`idDentista`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Status (
+  `idStatus` INT(11) NOT NULL,
+  `status` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`idStatus`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE ProcedimentoTratamento (
+  `idProcedimentoTratamento` INT(11) NOT NULL AUTO_INCREMENT,
+  `idProcedimento` INT(11) NOT NULL,
+  `idTratamento` INT(11) NOT NULL,
+  `anotacoes` LONGTEXT NULL DEFAULT NULL,
+  `idDente` INT(11) NOT NULL,
+  `idStatus` INT(11) NOT NULL,
+  `data` DATE NULL DEFAULT NULL,
+  PRIMARY KEY (`idProcedimentoTratamento`),
+  FOREIGN KEY (`idProcedimento`) REFERENCES Procedimento (`idProcedimento`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idTratamento`) REFERENCES Tratamento (`idTratamento`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idDente`) REFERENCES Dente (`idDente`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idStatus`) REFERENCES Status (`idStatus`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE StatusPagamento (
+  `idStatusPagamento` INT(11) NOT NULL AUTO_INCREMENT,
+  `status` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`idStatusPagamento`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE FormaPagamento (
+  `idFormaPagamento` INT(11) NOT NULL AUTO_INCREMENT,
+  `formaPagamento` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`idFormaPagamento`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE Financeiro (
+  `idFinanceiro` INT(11) NOT NULL AUTO_INCREMENT,
+  `dataPagamento` DATE NULL DEFAULT NULL,
+  `dataVencimento` DATE NULL DEFAULT NULL,
+  `valorParcela` FLOAT(11) NULL DEFAULT NULL,
+  `valorPago` FLOAT(11) NULL DEFAULT NULL,
+  `multa` FLOAT(11) NULL DEFAULT NULL,
+  `desconto` FLOAT(11) NULL DEFAULT NULL,
+  `aumento` FLOAT(11) NULL DEFAULT NULL,
+  `idTratamento` INT(11) NOT NULL,
+  `idStatusPagamento` INT(11) NOT NULL,
+  `descricao` LONGTEXT NULL DEFAULT NULL,
+  `idFormaPagamento` INT(11) NOT NULL,
+  PRIMARY KEY (`idFinanceiro`),
+  FOREIGN KEY (`idTratamento`) REFERENCES Tratamento (`idTratamento`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idStatusPagamento`) REFERENCES StatusPagamento (`idStatusPagamento`) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`idFormaPagamento`) REFERENCES FormaPagamento (`idFormaPagamento`) ON UPDATE CASCADE ON DELETE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
